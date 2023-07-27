@@ -1,0 +1,47 @@
+#!/bin/bash
+
+init() {
+  echo [i] Cloning repo...
+  git clone https://github.com/badmsgchat/backend app && cd app
+  git submodule update --init --recursive
+
+  echo [i] Installing dependencies...
+  npm install
+
+  echo [i] "Created config file. (check config.js to edit the secret key etc..)"
+  echo "module.exports = {" > config.js
+  echo "  PORT: 80," >> config.js
+  echo "  SECRETKEY: 'secret' // edit this!" >> config.js
+  echo "}" >> config.js
+
+  echo [i] "You can now run '$0 dev' to start the server."
+}
+
+build() {
+  cd app
+  echo [build] building...
+  node ./frontend/rebuild.js # creates script.min.js for the frontend
+  node ./scripts/ircmp.js server.js build.js # builds the backend thing
+}
+
+
+case "$1" in
+  dev|start)
+    build
+    node .;;
+  build)
+    build;;
+  init)
+    if [ -d "app" ]; then
+      echo "seems like the 'app' folder already exists."
+      exit 1
+    else
+      init
+    fi;;
+
+  *)
+    printf "usage: $0 <command>\n"
+    printf "  dev/start - starts the server\n\n"
+    printf "  init - initiates and sets everything up (one time use)\n"
+    printf "  build - builds everything (ran automatically by the dev command)\n";;
+esac

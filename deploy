@@ -1,11 +1,14 @@
 #!/bin/bash
 
 init() {
-  echo [i] Cloning repo...
-  git clone https://github.com/badmsgchat/backend app && cd app
-  git submodule update --init --recursive
+  echo [i] Cloning repos...
+  
+  git clone https://github.com/badmsgchat/backend app
+  git clone https://github.com/badmsgchat/frontend app/frontend
+
 
   echo [i] Installing dependencies...
+  cd app
   npm install
 
   echo [i] "Created config file. (check config.js to edit the secret key etc..)"
@@ -17,6 +20,12 @@ init() {
   echo [i] "You can now run '$0 dev' to start the server."
 }
 
+update(){
+  cd app && git pull origin # backend
+  cd frontend && git pull origin # frontend
+}
+
+
 build() {
   cd app
   echo [build] building...
@@ -27,21 +36,22 @@ build() {
 
 case "$1" in
   dev|start)
-    build
-    node .;;
+    build && node .;;
+  update)
+    update;;
   build)
     build;;
   init)
     if [ -d "app" ]; then
-      echo "seems like the 'app' folder already exists."
-      exit 1
+      echo "seems like the 'app' folder already exists." && exit 1
     else
       init
     fi;;
 
   *)
     printf "usage: $0 <command>\n"
-    printf "  dev/start - starts the server\n\n"
+    printf "  dev/start - starts the server\n"
+    printf "  update - attempts to update repositories\n\n"
     printf "  init - initiates and sets everything up (one time use)\n"
     printf "  build - builds everything (ran automatically by the dev command)\n";;
 esac

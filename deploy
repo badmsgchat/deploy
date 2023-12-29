@@ -1,46 +1,42 @@
 #!/bin/bash
 
 init() {
-  echo [i] Cloning repos...
-  
+  echo [i] Cloning backend, frontend...
   git clone https://github.com/badmsgchat/backend app
-  git clone https://github.com/badmsgchat/frontend app/frontend
+  curl -o build.tar.gz --progress-bar -L https://github.com/badmsgchat/frontend/releases/download/latest/build.tar.gz
+  tar -xzf build.tar.gz -C app/src/ && rm build.tar.gz
+  # patch server
+  patch -i app/src/server.patch app/index.js && rm app/src/server.patch
 
 
   echo [i] Installing dependencies...
   cd app
   npm install
 
-  echo [i] "Created config file. (check config.js to edit the secret key etc..)"
+  echo [i] "Created config file. (please check config.js to edit sensitive values)"
   echo "module.exports = {" > config.js
   echo "  PORT: 80," >> config.js
-  echo "  SECRETKEY: 'secret' // edit this!" >> config.js
+  echo "  SECRET: 'secret' // edit this to something longer!!" >> config.js
   echo "}" >> config.js
 
   echo [i] "You can now run '$0 dev' to start the server."
 }
 
+
 update(){
   cd app && git pull origin # backend
-  cd frontend && git pull origin # frontend
-}
 
-
-build() {
-  cd app
-  echo [build] building...
-  node ./frontend/rebuild.js # creates script.min.js for the frontend
-  node ./scripts/ircmp.js server.js build.js # builds the backend thing
+  # frontend
+  curl -o build.tar.gz --progress-bar -L https://github.com/badmsgchat/frontend/releases/download/latest/build.tar.gz
+  tar -xzf build.tar.gz -C src/ && rm -f build.tar.gz src/server.patch
 }
 
 
 case "$1" in
   dev|start)
-    build && node .;;
+    cd app && node .;;
   update)
     update;;
-  build)
-    build;;
   init)
     if [ -d "app" ]; then
       echo "seems like the 'app' folder already exists." && exit 1
@@ -52,6 +48,5 @@ case "$1" in
     printf "usage: $0 <command>\n"
     printf "  dev/start - starts the server\n"
     printf "  update - attempts to update repositories\n\n"
-    printf "  init - initiates and sets everything up (one time use)\n"
-    printf "  build - builds everything (ran automatically by the dev command)\n";;
+    printf "  init - initiates and sets everything up (one time use)\n";;
 esac

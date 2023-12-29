@@ -2,7 +2,7 @@
 deployment scripts used for self-hosting and etc...
 
 ## setup
-if you came from the backend repo, here's how to get quickly started:
+if you came from the backend repo, here's how to get started:
 ```sh
 git clone https://github.com/badmsgchat/deploy badmsg && cd badmsg
 sh deploy init # initiates the repos
@@ -16,7 +16,6 @@ from the cli:
 usage: deploy <command>
   dev/start - starts the server
   update - attempts to update repositories
-
+  
   init - initiates and sets everything up (one time use)
-  build - builds everything (ran automatically by the dev command)
 ```

@@ -3,7 +3,7 @@
 init() {
   echo [i] Cloning backend, frontend...
   git clone https://github.com/badmsgchat/backend app
-  curl -o build.tar.gz --progress-bar -L https://github.com/badmsgchat/frontend/releases/download/latest/build.tar.gz
+  curl -o build.tar.gz --progress-bar -L "https://github.com/badmsgchat/frontend/releases/latest/download/build.tar.gz"
   tar -xzf build.tar.gz -C app/src/ && rm build.tar.gz
   # patch server
   patch -i app/src/server.patch app/index.js && rm app/src/server.patch
@@ -16,7 +16,7 @@ init() {
   echo [i] "Created config file. (please check config.js to edit sensitive values)"
   echo "module.exports = {" > config.js
   echo "  PORT: 80," >> config.js
-  echo "  SECRET: 'secret' // edit this to something longer!!" >> config.js
+  echo "  SECRET: 'secret' // edit this to something random!!" >> config.js
   echo "}" >> config.js
 
   echo [i] "You can now run '$0 dev' to start the server."
@@ -27,7 +27,7 @@ update(){
   cd app && git pull origin # backend
 
   # frontend
-  curl -o build.tar.gz --progress-bar -L https://github.com/badmsgchat/frontend/releases/download/latest/build.tar.gz
+  curl -o build.tar.gz --progress-bar -L "https://github.com/badmsgchat/frontend/releases/latest/download/build.tar.gz"
   tar -xzf build.tar.gz -C src/ && rm -f build.tar.gz src/server.patch
 }
 
